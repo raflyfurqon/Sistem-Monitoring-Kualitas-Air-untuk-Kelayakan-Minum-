@@ -366,7 +366,7 @@ def render_status_and_confidence(status: str, confidence: int):
         
         <div class="equal-height-wrapper">
             <div class="confidence-box">
-                <div class="confidence-label-inline">Tingkat Keyakinan</div>
+                <div class="confidence-label-inline">Tingkat Keyakinan Untuk Diminum</div>
                 <div class="confidence-value-inline">{confidence}%</div>
                 <div class="confidence-bar-inline">
                     <div class="confidence-fill-inline"></div>
@@ -525,7 +525,7 @@ def render_documentation():
             st.dataframe(turb_df, hide_index=True, use_container_width=True)
         
         with doc_tab2:
-            st.markdown("##### Aturan Inferensi Logika Fuzzy (R1–R24)")
+            st.markdown("##### Aturan Inferensi Logika Fuzzy (R1–R22)")
             
             st.markdown("**Kondisi Tidak Layak Minum**")
             st.markdown("""
@@ -543,24 +543,22 @@ def render_documentation():
             - **R8:** IF pH *Sedikit Basa* AND TDS *Cukup* AND Kekeruhan *Cukup*  
             - **R9:** IF pH *Netral* AND TDS *Cukup* AND Kekeruhan *Baik*  
             - **R10:** IF pH *Netral* AND TDS *Baik* AND Kekeruhan *Cukup*
-            - **R11:** IF pH *Netral* AND TDS *Sempurna* AND Kekeruhan *Baik* 
-            - **R12:** IF pH *Netral* AND TDS *Baik* AND Kekeruhan *Sempurna*
-            - **R13:** IF pH *Sedikit Asam* AND TDS *Baik* AND Kekeruhan *Baik*  
-            - **R14:** IF pH *Sedikit Basa* AND TDS *Baik* AND Kekeruhan *Baik*
-            - **R15:** IF pH *Sedikit Asam* AND TDS *Baik* AND Kekeruhan *Sempurna*
-            - **R16:** IF pH *Sedikit Basa* AND TDS *Baik* AND Kekeruhan *Sempurna*
-            - **R17:** IF pH *Sedikit Asam* AND TDS *Sempurna* AND Kekeruhan *Baik*
-            - **R18:** IF pH *Sedikit Basa* AND TDS *Sempurna* AND Kekeruhan *Baik*                     
+            - **R11:** IF pH *Sedikit Asam* AND TDS *Baik* AND Kekeruhan *Baik*  
+            - **R12:** IF pH *Sedikit Basa* AND TDS *Baik* AND Kekeruhan *Baik*
+            - **R13:** IF pH *Sedikit Asam* AND TDS *Baik* AND Kekeruhan *Sempurna*
+            - **R14:** IF pH *Sedikit Basa* AND TDS *Baik* AND Kekeruhan *Sempurna*
+            - **R15:** IF pH *Sedikit Asam* AND TDS *Sempurna* AND Kekeruhan *Baik*
+            - **R16:** IF pH *Sedikit Basa* AND TDS *Sempurna* AND Kekeruhan *Baik*                     
             """)
             
             st.markdown("**Kondisi Layak Minum**")
             st.markdown("""
-            - **R19:** IF pH *Sedikit Asam* AND TDS *Sempurna* AND Kekeruhan *Sempurna*
-            - **R20:** IF pH *Sedikit Basa* AND TDS *Sempurna* AND Kekeruhan *Sempurna*
-            - **R21:** IF pH *Netral* AND TDS *Sempurna* AND Kekeruhan *Sempurna*  
-            - **R22:** IF pH *Netral* AND TDS *Baik* AND Kekeruhan *Baik*  
-            - **R23:** IF pH *Netral* AND TDS *Sempurna* AND Kekeruhan *Baik*  
-            - **R24:** IF pH *Netral* AND TDS *Baik* AND Kekeruhan *Sempurna*  
+            - **R17:** IF pH *Sedikit Asam* AND TDS *Sempurna* AND Kekeruhan *Sempurna*
+            - **R18:** IF pH *Sedikit Basa* AND TDS *Sempurna* AND Kekeruhan *Sempurna*
+            - **R19:** IF pH *Netral* AND TDS *Sempurna* AND Kekeruhan *Sempurna*  
+            - **R20:** IF pH *Netral* AND TDS *Baik* AND Kekeruhan *Baik*   
+            - **R21:** IF pH *Netral* AND TDS *Sempurna* AND Kekeruhan *Baik*  
+            - **R22:** IF pH *Netral* AND TDS *Baik* AND Kekeruhan *Sempurna*  
             """)
             
             st.info(
@@ -598,10 +596,19 @@ def render_documentation():
             - **Safety First**: Prioritas pada keamanan air minum
             
             **Tingkat Keyakinan (Confidence Level):**
-            - **95-100%**: Kedua sistem setuju + parameter ideal (Rule R13-R16)
-            - **85-94%**: Kedua sistem setuju + kondisi baik
-            - **75-84%**: Sistem berbeda pendapat (gunakan yang lebih aman)
-            - **60-74%**: Tidak ada rule aktif pada Sistem Pakar
+            - **95-100%**: ML setuju + ES Layak + parameter optimal (Rule R19-R22)
+            - **75-94%**: ML setuju + ES Layak + parameter baik
+            - **50-75%**: ML tidak setuju + ES Layak (hanya ES contribution)
+            - **25-50%**: ML setuju + ES Cukup Layak
+            - **25%**: ML setuju + ES Tidak Layak (hanya ML contribution)
+            - **0%**: ML tidak setuju + ES Tidak Layak (tidak ada contribution)
+            
+            **Bobot Confidence:**
+            - ML setuju dengan ES = 25%
+            - ML tidak setuju dengan ES = 0%
+            - ES Layak Minum = 0-75% (base + bonus)
+            - ES Cukup Layak = 0-50% (base + bonus)
+            - ES Tidak Layak = 0% (tidak ada contribution)
             """)
             
             st.markdown("**Diagram Alur Keputusan:**")
@@ -1380,62 +1387,21 @@ def main():
             # 4. AI ANALYSIS & FINAL STATUS - PARALLEL PROCESSING
             model = load_model()
             
-            # *** PARALLEL HYBRID WORKFLOW ***
+            # *** PARALLEL HYBRID WORKFLOW - SIMPLIFIED ***
             # Tahap 1: Machine Learning - berjalan independen
             ml_result = model.predict(ph, tds, ntu)
-            ml_confidence = 85  # Confidence ML
             
-            # Tahap 2: Expert System - berjalan independen (selalu dijalankan)
-            es_result, es_explanations, es_confidence, has_active_rules = evaluate_water_quality(ph, tds, ntu, None)
+            # Tahap 2: Expert System - berjalan independen dengan ML result
+            # ES akan menghitung confidence berdasarkan agreement dengan ML
+            es_result, es_explanations, confidence, has_active_rules = evaluate_water_quality(ph, tds, ntu, ml_result)
             rule_ids = re.findall(r"R\d+", " ".join(es_explanations))
             
-            # Tahap 3: Kombinasi hasil (Voting Logic)
-            # Jika keduanya setuju → gunakan hasil tersebut
-            # Jika berbeda → prioritaskan yang lebih aman atau rule-based
+            # Tahap 3: Tentukan Status Final berdasarkan Voting Logic
+            # Status final ditentukan oleh hybrid_decision di dalam evaluate_water_quality
+            # Confidence sudah dihitung dengan benar (ML 0-25% + ES 0-75%)
             
-            if ml_result == "Layak Minum" and es_result == "Layak Minum":
-                # Kedua sistem setuju: Layak Minum
-                status = "Layak Minum"
-                confidence = max(ml_confidence, es_confidence)
-                explanations = es_explanations
-            
-            elif ml_result == "Tidak Layak Minum" and es_result == "Tidak Layak Minum":
-                # Kedua sistem setuju: Tidak Layak Minum
-                status = "Tidak Layak Minum"
-                confidence = max(ml_confidence, es_confidence)
-                explanations = es_explanations
-            
-            elif ml_result == "Tidak Layak Minum" and es_result == "Layak Minum":
-                # ML: Tidak Layak, ES: Layak → Prioritaskan ES (rule-based lebih spesifik)
-                status = "Layak Minum"
-                confidence = es_confidence
-                explanations = es_explanations
-                explanations.append("\n⚠️ ML memprediksi 'Tidak Layak', namun Sistem Pakar mendeteksi kondisi aman berdasarkan aturan spesifik")
-
-            elif ml_result == "Tidak Layak Minum" and es_result == "Cukup Layak Minum":
-                # ML: Tidak Layak, ES: Cukup Layak → Prioritaskan ES (rule-based lebih spesifik)
-                status = "Cukup Layak Minum"
-                confidence = es_confidence
-                explanations = es_explanations
-                explanations.append("\n⚠️ ML memprediksi 'Tidak Layak', namun Sistem Pakar mendeteksi kondisi cukup aman berdasarkan aturan spesifik")
-            
-            elif ml_result == "Layak Minum" and es_result == "Cukup Layak Minum":
-                # ML: Layak, ES: Cukup Layak → Prioritaskan ES (rule-based lebih spesifik)
-                status = "Cukup Layak Minum"
-                confidence = es_confidence
-                explanations = es_explanations
-                explanations.append("\n⚠️ ML memprediksi 'Layak Minum', namun Sistem Pakar mendeteksi kondisi cukup aman berdasarkan aturan spesifik")
-
-            
-            else:  # ml_result == "Layak Minum" and es_result == "Tidak Layak Minum"
-                # ML: Layak, ES: Tidak Layak → Prioritaskan keamanan (Tidak Layak)
-                status = "Tidak Layak Minum"
-                confidence = es_confidence if has_active_rules else 75
-                explanations = es_explanations
-                if not has_active_rules:
-                    explanations.append("\n⚠️ ML memprediksi 'Layak Minum', tetapi tidak ada aturan yang aktif di Sistem Pakar")
-                else:
-                    explanations.append("\n⚠️ ML memprediksi 'Layak Minum', tetapi Sistem Pakar mendeteksi kondisi tidak aman berdasarkan aturan")
+            status = es_result  # Status final dari ES (sudah melalui hybrid_decision)
+            explanations = es_explanations
             
             # **UPLOAD STATUS TO FIREBASE (same node as sensor)**
             upload_status_to_firebase(db_path, status, confidence)
