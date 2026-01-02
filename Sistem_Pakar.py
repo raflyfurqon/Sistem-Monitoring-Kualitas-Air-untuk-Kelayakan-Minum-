@@ -1,9 +1,3 @@
-"""
-Expert System for Water Quality Evaluation
-Sistem Pakar dengan Fuzzy Logic (Trapezoidal) berbasis Standar WHO
-VERSI DIPERBAIKI
-"""
-
 import numpy as np
 
 
@@ -124,13 +118,12 @@ def defuzzifikasi_output(firing_strength):
 
 
 # =============================
-# SISTEM INFERENSI FUZZY - DIPERBAIKI
+# SISTEM INFERENSI FUZZY
 # =============================
 
 def fuzzy_inference(ph, tds, ntu):
     """
     Sistem inferensi fuzzy untuk evaluasi kualitas air
-    PERBAIKAN: Rule R11-R24 sekarang konsisten dengan dokumentasi
     """
     
     details = {}
@@ -185,101 +178,85 @@ def fuzzy_inference(ph, tds, ntu):
         firing_strength['Tidak Layak'] = max(firing_strength['Tidak Layak'], r6)
         rules_fired.append(('R6', r6, 'Kekeruhan Tidak Diterima'))
     
-    # --- ATURAN CUKUP LAYAK MINUM (R7-R18) ---
+    # --- ATURAN CUKUP LAYAK MINUM (R7-R16) ---
     
-    # R7: pH Sedikit Asam AND TDS Cukup AND Kekeruhan Cukup
     r7 = min(ph_membership['Sedikit Asam'], tds_membership['Cukup'], ntu_membership['Cukup'])
     if r7 > 0:
         firing_strength['Cukup Layak'] = max(firing_strength['Cukup Layak'], r7)
         rules_fired.append(('R7', r7, 'pH Sedikit Asam, TDS Cukup, Kekeruhan Cukup'))
     
-    # R8: pH Sedikit Basa AND TDS Cukup AND Kekeruhan Cukup
     r8 = min(ph_membership['Sedikit Basa'], tds_membership['Cukup'], ntu_membership['Cukup'])
     if r8 > 0:
         firing_strength['Cukup Layak'] = max(firing_strength['Cukup Layak'], r8)
         rules_fired.append(('R8', r8, 'pH Sedikit Basa, TDS Cukup, Kekeruhan Cukup'))
     
-    # R9: pH Netral AND TDS Cukup AND Kekeruhan Baik
     r9 = min(ph_membership['Netral'], tds_membership['Cukup'], ntu_membership['Baik'])
     if r9 > 0:
         firing_strength['Cukup Layak'] = max(firing_strength['Cukup Layak'], r9)
         rules_fired.append(('R9', r9, 'pH Netral, TDS Cukup, Kekeruhan Baik'))
     
-    # R10: pH Netral AND TDS Baik AND Kekeruhan Cukup
     r10 = min(ph_membership['Netral'], tds_membership['Baik'], ntu_membership['Cukup'])
     if r10 > 0:
         firing_strength['Cukup Layak'] = max(firing_strength['Cukup Layak'], r10)
         rules_fired.append(('R10', r10, 'pH Netral, TDS Baik, Kekeruhan Cukup'))   
 
-    # R11: pH Sedikit Asam AND TDS Baik AND Kekeruhan Baik
     r11 = min(ph_membership['Sedikit Asam'], tds_membership['Baik'], ntu_membership['Baik'])
     if r11 > 0:
         firing_strength['Cukup Layak'] = max(firing_strength['Cukup Layak'], r11)
         rules_fired.append(('R11', r11, 'pH Sedikit Asam, TDS Baik, Kekeruhan Baik'))
     
-    # R12: pH Sedikit Basa AND TDS Baik AND Kekeruhan Baik
     r12 = min(ph_membership['Sedikit Basa'], tds_membership['Baik'], ntu_membership['Baik'])
     if r12 > 0:
         firing_strength['Cukup Layak'] = max(firing_strength['Cukup Layak'], r12)
         rules_fired.append(('R12', r12, 'pH Sedikit Basa, TDS Baik, Kekeruhan Baik'))
 
-    # R13: pH Sedikit Asam AND TDS Baik AND Kekeruhan Sempurna
     r13 = min(ph_membership['Sedikit Asam'], tds_membership['Baik'], ntu_membership['Sempurna'])
     if r13 > 0:
         firing_strength['Cukup Layak'] = max(firing_strength['Cukup Layak'], r13)
         rules_fired.append(('R13', r13, 'pH Sedikit Asam, TDS Baik, Kekeruhan Sempurna'))
 
-    # R14: pH Sedikit Basa AND TDS Baik AND Kekeruhan Sempurna
     r14 = min(ph_membership['Sedikit Basa'], tds_membership['Baik'], ntu_membership['Sempurna'])
     if r14 > 0:
         firing_strength['Cukup Layak'] = max(firing_strength['Cukup Layak'], r14)
         rules_fired.append(('R14', r14, 'pH Sedikit Basa, TDS Baik, Kekeruhan Sempurna'))
 
-    # R15: pH Sedikit Asam AND TDS Sempurna AND Kekeruhan Baik
     r15 = min(ph_membership['Sedikit Asam'], tds_membership['Sempurna'], ntu_membership['Baik'])
     if r15 > 0:
         firing_strength['Cukup Layak'] = max(firing_strength['Cukup Layak'], r15)
         rules_fired.append(('R15', r15, 'pH Sedikit Asam, TDS Sempurna, Kekeruhan Baik'))
 
-    # R16: pH Sedikit Basa AND TDS Sempurna AND Kekeruhan Baik
     r16 = min(ph_membership['Sedikit Basa'], tds_membership['Sempurna'], ntu_membership['Baik'])
     if r16 > 0:
         firing_strength['Cukup Layak'] = max(firing_strength['Cukup Layak'], r16)
         rules_fired.append(('R16', r16, 'pH Sedikit Basa, TDS Sempurna, Kekeruhan Baik'))
 
-    # --- ATURAN LAYAK MINUM (R19-R24) ---
+    # --- ATURAN LAYAK MINUM (R17-R22) ---
 
-    # R17: pH Sedikit Asam AND TDS Sempurna AND Kekeruhan Sempurna
     r17 = min(ph_membership['Sedikit Asam'], tds_membership['Sempurna'], ntu_membership['Sempurna'])
     if r17 > 0:
         firing_strength['Layak'] = max(firing_strength['Layak'], r17)
         rules_fired.append(('R17', r17, 'pH Sedikit Asam, TDS Sempurna, Kekeruhan Sempurna'))
 
-    # R18: pH Sedikit Basa AND TDS Sempurna AND Kekeruhan Sempurna
     r18 = min(ph_membership['Sedikit Basa'], tds_membership['Sempurna'], ntu_membership['Sempurna'])
     if r18 > 0:
         firing_strength['Layak'] = max(firing_strength['Layak'], r18)
         rules_fired.append(('R18', r18, 'pH Sedikit Basa, TDS Sempurna, Kekeruhan Sempurna'))
 
-    # R19: pH Netral AND TDS Sempurna AND Kekeruhan Sempurna
     r19 = min(ph_membership['Netral'], tds_membership['Sempurna'], ntu_membership['Sempurna'])
     if r19 > 0:
         firing_strength['Layak'] = max(firing_strength['Layak'], r19)
         rules_fired.append(('R19', r19, 'pH Netral, TDS Sempurna, Kekeruhan Sempurna'))
 
-    # R20: pH Netral AND TDS Baik AND Kekeruhan Baik
     r20 = min(ph_membership['Netral'], tds_membership['Baik'], ntu_membership['Baik'])
     if r20 > 0:
         firing_strength['Layak'] = max(firing_strength['Layak'], r20)
         rules_fired.append(('R20', r20, 'pH Netral, TDS Baik, Kekeruhan Baik'))
 
-    # R21: pH Netral AND TDS Sempurna AND Kekeruhan Baik
     r21 = min(ph_membership['Netral'], tds_membership['Sempurna'], ntu_membership['Baik'])
     if r21 > 0:
         firing_strength['Layak'] = max(firing_strength['Layak'], r21)
         rules_fired.append(('R21', r21, 'pH Netral, TDS Sempurna, Kekeruhan Baik'))
 
-    # R22: pH Netral AND TDS Baik AND Kekeruhan Sempurna
     r22 = min(ph_membership['Netral'], tds_membership['Baik'], ntu_membership['Sempurna'])
     if r22 > 0:
         firing_strength['Layak'] = max(firing_strength['Layak'], r22)
@@ -324,99 +301,193 @@ def fuzzy_inference(ph, tds, ntu):
 
 def calculate_confidence(status, firing_strength, rules_fired, ph, tds, ntu, ph_membership, tds_membership, ntu_membership, ml_result=None, es_result=None):
     """
-    Menghitung tingkat keyakinan (confidence)
+    SISTEM CONFIDENCE BARU (UPDATED):
+    
+    ATURAN KHUSUS R1-R6 (Tidak Layak Minum):
+    - Jika R1-R6 aktif DAN ML = "Tidak Layak Minum" → Confidence = 0% (keduanya setuju air berbahaya)
+    - Jika R1-R6 aktif DAN ML = "Layak Minum" → Confidence = 25% (hanya ML yang "berani" bilang layak)
+    - Ini adalah ALARM BAHAYA dengan exception untuk ML yang berbeda pendapat
+    
+    ML contribution (0-25%):
+    - ML = ES Status → 25% (ML setuju dengan ES)
+    - ML ≠ ES Status → 0% untuk status Cukup/Tidak Layak
+    - ML = "Layak" saat R1-R6 aktif → 25% (ML berani berbeda pendapat)
+    
+    ES contribution (0-75%):
+    - Status "Layak Minum" → 0-75% (base + bonus)
+    - Status "Cukup Layak Minum" → 0-50% (base + bonus, max lebih rendah)
+    - Status "Tidak Layak Minum" → 0%
+    
+    Total: ML + ES (max 100%)
     """
     
-    if status == "Layak Minum":
-        base_confidence = 90
-    elif status == "Cukup Layak Minum":
-        base_confidence = 75
-    else:
-        base_confidence = 50
+    # === CEK RULE R1-R6 (ALARM BAHAYA) ===
+    danger_rules = ['R1', 'R2', 'R3', 'R4', 'R5', 'R6']
+    active_danger_rules = [r[0] for r in rules_fired if r[0] in danger_rules]
     
-    max_firing_strength = max(firing_strength.values())
-    strength_bonus = int(max_firing_strength * 5)
+    if active_danger_rules:
+        rule_names = ', '.join(active_danger_rules)
+        
+        # KASUS KHUSUS: Jika ML bilang "Layak Minum" saat R1-R6 aktif
+        if ml_result is not None and ml_result.strip() == "Layak Minum":
+            confidence = 25
+            explanation = f"""
+Perhitungan Confidence (Sistem Baru):
+⚠️ ALARM BAHAYA AKTIF: {rule_names}
+• Rule R1-R6 mendeteksi parameter berbahaya
+• TETAPI ML memprediksi: "Layak Minum"
+• ML berani berbeda pendapat dengan ES → +25%
+• ES contribution: 0% (alarm bahaya)
+• TOTAL: 25% (HANYA DARI ML - TETAP WASPADAI ALARM ES)
+
+⚠️ CATATAN PENTING: 
+Meskipun ML memprediksi "Layak Minum", sistem pakar mendeteksi 
+parameter yang melewati batas aman. Disarankan untuk berhati-hati 
+dan memverifikasi dengan pengukuran ulang atau sumber lain.
+"""
+            return confidence, explanation
+        
+        # KASUS NORMAL: ML setuju dengan ES atau ML bilang lebih buruk
+        else:
+            confidence = 0
+            explanation = f"""
+Perhitungan Confidence (Sistem Baru):
+⚠️ ALARM BAHAYA AKTIF: {rule_names}
+• Rule R1-R6 adalah alarm keamanan
+• ML prediction: {ml_result if ml_result else 'N/A'}
+• Confidence MUTLAK: 0%
+• ML contribution: 0% (setuju dengan alarm atau lebih pesimis)
+• ES contribution: 0% (alarm bahaya)
+• TOTAL: 0% (TIDAK ADA KEPERCAYAAN - AIR BERBAHAYA)
+"""
+            return confidence, explanation
     
-    quality_adjustment = 0
+    ml_confidence = 0
+    es_confidence = 0
     
-    if 6.9 <= ph <= 7.1:
-        quality_adjustment += 5
-    elif 6.5 <= ph <= 8.5:
-        quality_adjustment += 2
-    elif ph < 6.0 or ph > 9.0:
-        quality_adjustment -= 5
-    
-    if tds <= 300:
-        quality_adjustment += 5
-    elif tds <= 600:
-        quality_adjustment += 2
-    elif tds > 900:
-        quality_adjustment -= 5
-    
-    if ntu <= 1:
-        quality_adjustment += 5
-    elif ntu <= 5:
-        quality_adjustment += 2
-    elif ntu > 25:
-        quality_adjustment -= 5
-    
-    rule_specificity_bonus = 0
-    for rule_name, strength, condition in rules_fired:
-        if rule_name in ['R19', 'R20', 'R21', 'R22', 'R23', 'R24']:
-            rule_specificity_bonus = max(rule_specificity_bonus, 5)
-        elif rule_name in ['R15', 'R16', 'R17', 'R18']:
-            rule_specificity_bonus = max(rule_specificity_bonus, 4)
-        elif rule_name in ['R13', 'R14']:
-            rule_specificity_bonus = max(rule_specificity_bonus, 3)
-    
-    ml_es_adjustment = 0
-    ml_es_note = ""
-    
+    # === KOMPONEN ML (0% atau 25%) ===
     if ml_result is not None and es_result is not None:
         ml_normalized = ml_result.strip()
         es_normalized = es_result.strip()
         
         if ml_normalized == es_normalized:
-            ml_es_adjustment = 5
-            ml_es_note = "ML dan ES setuju → BONUS +5%"
+            ml_confidence = 25
+            ml_note = f"ML SETUJU dengan ES ({ml_normalized}) → +25%"
         else:
-            status_levels = {
-                "Layak Minum": 2,
-                "Cukup Layak Minum": 1,
-                "Tidak Layak Minum": 0
-            }
-            
-            ml_level = status_levels.get(ml_normalized, 0)
-            es_level = status_levels.get(es_normalized, 0)
-            level_difference = abs(ml_level - es_level)
-            
-            if level_difference == 1:
-                ml_es_adjustment = -15
-                ml_es_note = f"ML ({ml_normalized}) ≠ ES ({es_normalized}) → PENALTY -15%"
-            elif level_difference == 2:
-                ml_es_adjustment = -20
-                ml_es_note = f"ML ({ml_normalized}) ≠ ES ({es_normalized}) → PENALTY -20%"
-            else:
-                ml_es_adjustment = -15
-                ml_es_note = f"ML dan ES berbeda pendapat → PENALTY -15%"
+            ml_confidence = 0
+            ml_note = f"ML TIDAK SETUJU dengan ES (ML: {ml_normalized}, ES: {es_normalized}) → 0%"
+    else:
+        ml_note = "ML tidak tersedia"
     
-    confidence = base_confidence + strength_bonus + quality_adjustment + rule_specificity_bonus + ml_es_adjustment
+    # === KOMPONEN ES (0-75%) ===
+    if status == "Layak Minum":
+        base_es = 40
+        max_es = 75
+        
+        max_firing_strength = max(firing_strength.values()) if firing_strength else 0
+        strength_bonus = int(max_firing_strength * 10)
+        
+        quality_adjustment = 0
+        
+        if 6.95 <= ph <= 7.05:
+            quality_adjustment += 3
+        elif 6.8 <= ph <= 7.2:
+            quality_adjustment += 2
+        elif 6.5 <= ph <= 8.5:
+            quality_adjustment += 1
+        
+        if tds <= 300:
+            quality_adjustment += 3
+        elif tds <= 500:
+            quality_adjustment += 2
+        elif tds <= 600:
+            quality_adjustment += 1
+        
+        if ntu <= 1:
+            quality_adjustment += 4
+        elif ntu <= 3:
+            quality_adjustment += 3
+        elif ntu <= 5:
+            quality_adjustment += 2
+        
+        rule_specificity_bonus = 0
+        priority_rules = ['R19', 'R20', 'R21', 'R22']
+        high_priority_rules = ['R17', 'R18']
+        
+        for rule_name, strength, condition in rules_fired:
+            if rule_name in priority_rules:
+                rule_specificity_bonus = max(rule_specificity_bonus, 15)
+            elif rule_name in high_priority_rules:
+                rule_specificity_bonus = max(rule_specificity_bonus, 10)
+        
+        es_confidence = base_es + strength_bonus + quality_adjustment + rule_specificity_bonus
+        es_confidence = max(0, min(max_es, es_confidence))
+        
+        explanation_detail = f"""
+  - Base ES (Layak Minum): {base_es}%
+  - Firing Strength: +{strength_bonus}% (μ={max_firing_strength:.3f})
+  - Parameter Quality: +{quality_adjustment}%
+    · pH {ph:.2f}: {'optimal' if 6.95 <= ph <= 7.05 else 'baik' if 6.5 <= ph <= 8.5 else 'buruk'}
+    · TDS {tds:.1f}: {'optimal' if tds <= 300 else 'baik' if tds <= 600 else 'cukup'}
+    · NTU {ntu:.2f}: {'optimal' if ntu <= 1 else 'baik' if ntu <= 5 else 'cukup'}
+  - Rule Specificity: +{rule_specificity_bonus}%"""
+    
+    elif status == "Cukup Layak Minum":
+        base_es = 25
+        max_es = 50
+        
+        max_firing_strength = max(firing_strength.values()) if firing_strength else 0
+        strength_bonus = int(max_firing_strength * 10)
+        
+        quality_adjustment = 0
+        
+        if 6.95 <= ph <= 7.05:
+            quality_adjustment += 2
+        elif 6.8 <= ph <= 7.2:
+            quality_adjustment += 1
+        
+        if tds <= 300:
+            quality_adjustment += 2
+        elif tds <= 500:
+            quality_adjustment += 1
+        
+        if ntu <= 1:
+            quality_adjustment += 1
+        
+        rule_specificity_bonus = 0
+        medium_priority_rules = ['R11', 'R12', 'R13', 'R14', 'R15', 'R16']
+        
+        for rule_name, strength, condition in rules_fired:
+            if rule_name in medium_priority_rules:
+                rule_specificity_bonus = max(rule_specificity_bonus, 10)
+            else:
+                rule_specificity_bonus = max(rule_specificity_bonus, 5)
+        
+        es_confidence = base_es + strength_bonus + quality_adjustment + rule_specificity_bonus
+        es_confidence = max(0, min(max_es, es_confidence))
+        
+        explanation_detail = f"""
+  - Base ES (Cukup Layak): {base_es}%
+  - Firing Strength: +{strength_bonus}% (μ={max_firing_strength:.3f})
+  - Parameter Quality: +{quality_adjustment}%
+  - Rule Specificity: +{rule_specificity_bonus}%"""
+    
+    else:  # "Tidak Layak Minum"
+        es_confidence = 0
+        explanation_detail = "  - Base ES (Tidak Layak): 0% (tidak ada kontribusi)"
+    
+    # === TOTAL CONFIDENCE ===
+    confidence = ml_confidence + es_confidence
     confidence = max(0, min(100, confidence))
     
     explanation = f"""
-Perhitungan Confidence:
-• Base Confidence ({status}): {base_confidence}%
-• Firing Strength Bonus: +{strength_bonus}% (μ={max_firing_strength:.3f})
-• Parameter Quality Adjustment: {quality_adjustment:+d}%
-  - pH {ph}: {'optimal' if 6.9 <= ph <= 7.1 else 'baik' if 6.5 <= ph <= 8.5 else 'buruk'}
-  - TDS {tds}: {'optimal' if tds <= 300 else 'baik' if tds <= 600 else 'cukup' if tds <= 900 else 'buruk'}
-  - NTU {ntu}: {'optimal' if ntu <= 1 else 'baik' if ntu <= 5 else 'cukup' if ntu <= 25 else 'buruk'}
-• Rule Specificity Bonus: +{rule_specificity_bonus}%"""
-    
-    if ml_result is not None and es_result is not None:
-        explanation += f"\n• ML-ES Agreement: {ml_es_adjustment:+d}% ({ml_es_note})"
-    
-    explanation += f"\n• TOTAL CONFIDENCE: {confidence}%\n"
+Perhitungan Confidence (Sistem Baru):
+• Komponen ML (0% atau 25%): {ml_confidence}%
+  {ml_note}
+• Komponen ES (0-75%): {es_confidence}%
+{explanation_detail}
+• TOTAL: {confidence}% ({ml_confidence}% ML + {es_confidence}% ES)
+"""
     
     return confidence, explanation
 
@@ -490,7 +561,18 @@ def evaluate_water_quality(ph, tds, ntu, ml_result=None):
     if not has_active_rules:
         explanations.append("\n❌ Tidak ada aturan sistem pakar yang aktif")
         explanations.append("Kombinasi parameter tidak memenuhi kriteria keamanan apapun")
-        confidence = 40
+        
+        # Confidence calculation untuk no rules
+        if ml_result is not None:
+            if ml_result == "Layak Minum":
+                confidence = 25
+                explanations.append(f"\n⚠️ Confidence: {confidence}% (hanya dari ML yang memprediksi Layak, ES tidak aktif)")
+            else:
+                confidence = 0
+                explanations.append(f"\n⚠️ Confidence: {confidence}% (ML setuju dengan kondisi tidak pasti, tidak ada kontribusi)")
+        else:
+            confidence = 0
+        
         return final_status, explanations, confidence, has_active_rules
     
     if details['rules_fired']:
@@ -532,119 +614,91 @@ def evaluate_water_quality(ph, tds, ntu, ml_result=None):
 
 def get_recommendations(status, ph, tds, ntu):
     """
-    Memberikan rekomendasi berdasarkan status kualitas air
+    Memberikan rekomendasi berdasarkan status kualitas air (umum untuk berbagai sumber)
     """
     recommendations = []
     
     if status == "Tidak Layak Minum":
         recommendations.append("❌ AIR TIDAK AMAN UNTUK DIMINUM")
+        recommendations.append("• JANGAN konsumsi air ini dalam kondisi apapun")
+        recommendations.append("")
         
+        problems = []
+        
+        # Cek masalah pH
         if ph <= 6.5:
-            recommendations.append("• Naikkan pH menggunakan soda abu atau baking soda")
+            problems.append(f"pH terlalu asam ({ph:.2f}) - risiko iritasi lambung")
         elif ph >= 8.6:
-            recommendations.append("• Turunkan pH menggunakan asam sitrat atau cuka")
-            
+            problems.append(f"pH terlalu basa ({ph:.2f}) - risiko gangguan pencernaan")
+        
+        # Cek masalah TDS
         if tds >= 1200:
-            recommendations.append("• TDS sangat tinggi - gunakan filter RO (Reverse Osmosis)")
+            problems.append(f"TDS sangat tinggi ({tds:.1f} mg/L) - kandungan mineral berlebihan")
         elif tds >= 901:
-            recommendations.append("• TDS tinggi - pertimbangkan sistem filtrasi")
-            
+            problems.append(f"TDS tinggi ({tds:.1f} mg/L) - melebihi batas standar")
+        
+        # Cek masalah Kekeruhan
         if ntu > 100:
-            recommendations.append("• Kekeruhan sangat tinggi - hentikan penggunaan segera")
-            recommendations.append("• Periksa sumber kontaminasi")
+            problems.append(f"Kekeruhan sangat tinggi ({ntu:.2f} NTU) - risiko kontaminasi mikroba")
         elif ntu > 25:
-            recommendations.append("• Lakukan filtrasi atau sedimentasi untuk mengurangi kekeruhan")
-            recommendations.append("• Periksa sistem penyaringan")
+            problems.append(f"Kekeruhan tinggi ({ntu:.2f} NTU) - tidak memenuhi standar")
+        
+        if problems:
+            recommendations.append("**Masalah Terdeteksi:**")
+            for problem in problems:
+                recommendations.append(f"• {problem}")
+            recommendations.append("")
+        
+        recommendations.append("**Tindakan:**")
+        recommendations.append("• Hentikan konsumsi segera")
+        recommendations.append("• Gunakan sumber air alternatif yang aman")
+        recommendations.append("• Laporkan ke pihak terkait jika dari kemasan/distributor")
     
     elif status == "Cukup Layak Minum":
         recommendations.append("⚠️ AIR DAPAT DIMINUM DENGAN CATATAN")
-        recommendations.append("• Pertimbangkan untuk melakukan perebusan")
+        recommendations.append("• Kualitas memenuhi batas minimal namun belum optimal")
+        recommendations.append("")
         
-        if 6.6 <= ph <= 6.9 or 7.1 <= ph <= 8.5:
-            recommendations.append("• Monitor pH secara berkala")
-            
+        notes = []
+        
+        # Cek pH
+        if 6.6 <= ph <= 6.9:
+            notes.append(f"pH sedikit asam ({ph:.2f}) - masih aman")
+        elif 7.1 <= ph <= 8.5:
+            notes.append(f"pH sedikit basa ({ph:.2f}) - masih aman")
+        
+        # Cek TDS
         if 601 <= tds <= 900:
-            recommendations.append("• TDS agak tinggi, pertimbangkan filtrasi")
+            notes.append(f"TDS cukup tinggi ({tds:.1f} mg/L) - dapat diterima")
         elif 301 <= tds <= 600:
-            recommendations.append("• TDS dalam batas wajar, namun monitoring tetap diperlukan")
-            
+            notes.append(f"TDS baik ({tds:.1f} mg/L)")
+        
+        # Cek Kekeruhan
         if 5.1 <= ntu <= 25:
-            recommendations.append("• Gunakan filter sederhana untuk mengurangi kekeruhan")
+            notes.append(f"Kekeruhan cukup tinggi ({ntu:.2f} NTU)")
         elif 1.1 <= ntu <= 5:
-            recommendations.append("• Kekeruhan masih dapat diterima, monitor secara berkala")
+            notes.append(f"Kekeruhan baik ({ntu:.2f} NTU)")
+        
+        if notes:
+            recommendations.append("**Catatan:**")
+            for note in notes:
+                recommendations.append(f"• {note}")
+            recommendations.append("")
+        
+        recommendations.append("**Saran:**")
+        recommendations.append("• Aman untuk dikonsumsi sehari-hari")
+        recommendations.append("• Pertimbangkan sumber dengan kualitas lebih baik")
+        recommendations.append("• Monitor kualitas secara berkala")
     
     else:  # Layak Minum
-        recommendations.append("✅ AIR AMAN UNTUK DIMINUM")
-        recommendations.append("• Kualitas air memenuhi standar WHO")
+        recommendations.append("✅ AIR AMAN DAN BERKUALITAS BAIK")
+        recommendations.append("• Memenuhi standar WHO untuk air minum")
+        recommendations.append("• Aman untuk konsumsi jangka panjang")
+        recommendations.append("")
         
-        # Rekomendasi spesifik untuk Rule 19 (pH Sedikit Asam)
-        if 6.6 <= ph <= 6.9:
-            recommendations.append("• pH sedikit asam - pertimbangkan untuk menaikkan pH secara bertahap")
-            recommendations.append("• Gunakan media alkali seperti kalsit atau baking soda dalam dosis rendah")
-            recommendations.append("• Monitor pH agar tidak turun di bawah 6.5")
-        
-        # Rekomendasi spesifik untuk Rule 20 (pH Sedikit Basa)
-        elif 7.1 <= ph <= 8.5:
-            recommendations.append("• pH sedikit basa - pertimbangkan untuk menurunkan pH secara bertahap jika mendekati 8.5")
-            recommendations.append("• Gunakan media asam alami seperti gambut atau asam sitrat dalam dosis rendah")
-            recommendations.append("• Monitor pH agar tidak naik di atas 8.5")
-        
-        recommendations.append("• Tetap jaga kebersihan sumber air")
-        recommendations.append("• Lakukan pemeriksaan rutin untuk memastikan kualitas tetap terjaga")
+        recommendations.append("**Saran:**")
+        recommendations.append("• Simpan di tempat sejuk dan bersih")
+        recommendations.append("• Hindari paparan sinar matahari langsung")
+        recommendations.append("• Lakukan pengecekan berkala untuk konsistensi")
     
     return recommendations
-
-
-# =============================
-# FUNGSI KLASIFIKASI CRISP (BACKUP)
-# =============================
-
-def klasifikasi_ph(ph):
-    """
-    Klasifikasi pH berdasarkan standar WHO untuk air minum
-    Sesuai dokumentasi: Tabel 1 - Klasifikasi Tingkat pH
-    """
-    if ph <= 6.5:
-        return "Asam"
-    elif 6.6 <= ph <= 6.9:
-        return "Sedikit Asam"
-    elif 6.95 <= ph <= 7.05:
-        return "Netral"
-    elif 7.1 <= ph <= 8.5:
-        return "Sedikit Basa"
-    else:
-        return "Basa"
-
-
-def klasifikasi_tds(tds):
-    """
-    Klasifikasi TDS (Total Dissolved Solids) dalam mg/L
-    Sesuai dokumentasi: Tabel 2 - Klasifikasi Total Padatan Terlarut (TDS)
-    """
-    if tds <= 300:
-        return "Sempurna"
-    elif 301 <= tds <= 600:
-        return "Baik"
-    elif 601 <= tds <= 900:
-        return "Cukup"
-    elif 901 <= tds <= 1199:
-        return "Buruk"
-    else:
-        return "Tidak Diterima"
-
-
-def klasifikasi_kekeruhan(ntu):
-    """
-    Klasifikasi Kekeruhan (Turbidity) dalam NTU
-    Sesuai dokumentasi: Tabel 3 - Klasifikasi Kekeruhan
-    """
-    if ntu <= 1:
-        return "Sempurna"
-    elif 1.1 <= ntu <= 5:
-        return "Baik"
-    elif 5.1 <= ntu <= 25.0:
-        return "Cukup"
-    elif 25.1 <= ntu <= 100:
-        return "Buruk"
-    else:
-        return "Tidak Diterima"
