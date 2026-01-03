@@ -7,29 +7,29 @@ class WaterQualityModel:
     def __init__(self, model_path="water_potability_model.pkl"):
         try:
             self.model = joblib.load(model_path)
-            print(f"✅ Model loaded successfully from {model_path}")
+            print(f"Model loaded successfully from {model_path}")
             
             # Get feature names from the trained model
             if hasattr(self.model, 'feature_names_in_'):
                 self.feature_names = list(self.model.feature_names_in_)
-                print(f"📋 Model expects features: {self.feature_names}")
+                print(f"Model expects features: {self.feature_names}")
             else:
                 # Fallback jika model tidak menyimpan feature names
                 # Sesuaikan dengan urutan training data
                 self.feature_names = ['ph', 'Solids', 'Turbidity']
-                print(f"⚠️ Model doesn't have feature_names_in_, using default: {self.feature_names}")
+                print(f"Model doesn't have feature_names_in_, using default: {self.feature_names}")
                 
         except FileNotFoundError:
-            print(f"❌ Error: Model file '{model_path}' not found!")
+            print(f"Error: Model file '{model_path}' not found!")
             raise
         except Exception as e:
-            print(f"❌ Error loading model: {str(e)}")
+            print(f"Error loading model: {str(e)}")
             raise
 
     def predict(self, ph, tds, ntu):
         try:
             # Debug: Print input values
-            print(f"\n🔍 ML Model Input:")
+            print(f"\nML Model Input:")
             print(f"   pH  : {ph}")
             print(f"   TDS : {tds}")
             print(f"   NTU : {ntu}")
@@ -60,7 +60,7 @@ class WaterQualityModel:
             
             X = pd.DataFrame([data], columns=self.feature_names)
             
-            print(f"📊 DataFrame for prediction:")
+            print(f"DataFrame for prediction:")
             print(X)
             
             # Predict
@@ -69,16 +69,16 @@ class WaterQualityModel:
             # Get prediction probability if available
             if hasattr(self.model, 'predict_proba'):
                 proba = self.model.predict_proba(X)[0]
-                print(f"🎯 Prediction probabilities: {proba}")
+                print(f"Prediction probabilities: {proba}")
             
             result = "Layak Minum" if pred == 1 else "Tidak Layak Minum"
-            print(f"✅ ML Prediction: {result}")
+            print(f"ML Prediction: {result}")
             
             return result
             
         except Exception as e:
-            print(f"❌ Error during prediction: {str(e)}")
-            print(f"   Input values: ph={ph}, tds={tds}, ntu={ntu}")
+            print(f"Error during prediction: {str(e)}")
+            print(f"Input values: ph={ph}, tds={tds}, ntu={ntu}")
             # Return default prediction on error
             return "Tidak Layak Minum"
 
@@ -108,5 +108,5 @@ class WaterQualityModel:
             return result, confidence
             
         except Exception as e:
-            print(f"❌ Error in predict_with_confidence: {str(e)}")
+            print(f"Error in predict_with_confidence: {str(e)}")
             return "Tidak Layak Minum", 50
