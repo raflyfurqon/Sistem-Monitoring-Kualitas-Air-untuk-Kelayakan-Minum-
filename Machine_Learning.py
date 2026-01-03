@@ -5,12 +5,6 @@ import numpy as np
 
 class WaterQualityModel:
     def __init__(self, model_path="water_potability_model.pkl"):
-        """
-        Initialize the water quality prediction model
-        
-        Args:
-            model_path: Path to the saved model file
-        """
         try:
             self.model = joblib.load(model_path)
             print(f"✅ Model loaded successfully from {model_path}")
