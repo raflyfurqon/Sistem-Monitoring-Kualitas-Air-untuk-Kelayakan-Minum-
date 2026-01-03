@@ -27,22 +27,6 @@ class WaterQualityModel:
             raise
 
     def predict(self, ph, tds, ntu):
-        """
-        Predict water quality based on sensor readings
-        
-        Mapping:
-        - ph (sensor)  -> ph (model) atau 'ph' kolom
-        - tds (sensor) -> Solids (model) - Total Dissolved Solids
-        - ntu (sensor) -> Turbidity (model) - Kekeruhan
-        
-        Args:
-            ph: pH level (6.5-8.5 ideal)
-            tds: Total Dissolved Solids in mg/L
-            ntu: Turbidity in NTU
-            
-        Returns:
-            str: "Layak Minum" or "Tidak Layak Minum"
-        """
         try:
             # Debug: Print input values
             print(f"\n🔍 ML Model Input:")
@@ -99,12 +83,6 @@ class WaterQualityModel:
             return "Tidak Layak Minum"
 
     def predict_with_confidence(self, ph, tds, ntu):
-        """
-        Predict with confidence score
-        
-        Returns:
-            tuple: (prediction, confidence)
-        """
         try:
             # Create input DataFrame
             feature_mapping = {
