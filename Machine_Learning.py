@@ -110,31 +110,3 @@ class WaterQualityModel:
         except Exception as e:
             print(f"❌ Error in predict_with_confidence: {str(e)}")
             return "Tidak Layak Minum", 50
-
-
-# Test the model if run directly
-if __name__ == "__main__":
-    print("=" * 60)
-    print("TESTING WATER QUALITY ML MODEL")
-    print("=" * 60)
-    
-    try:
-        model = WaterQualityModel("water_potability_model.pkl")
-        
-        # Test cases
-        test_cases = [
-            (7.2, 120, 0.8, "Sempurna - pH netral, TDS rendah, jernih"),
-            (6.8, 350, 8, "Cukup - pH sedikit asam, TDS sedang, agak keruh"),
-            (5.5, 600, 15, "Buruk - pH asam, TDS tinggi, keruh"),
-            (7, 30000, 3.5, "Baik - pH sedikit basa, TDS baik, jernih"),
-        ]
-        
-        for i, (ph, tds, ntu, desc) in enumerate(test_cases, 1):
-            print(f"\n{'='*60}")
-            print(f"Test Case {i}: {desc}")
-            print(f"{'='*60}")
-            result = model.predict(ph, tds, ntu)
-            print(f"Final Result: {result}")
-            
-    except Exception as e:
-        print(f"❌ Test failed: {str(e)}")
